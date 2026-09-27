@@ -1,0 +1,35 @@
+name: Build Geode Mod
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Release]
+
+    name: Build Mod
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Geode CLI
+      uses: geode-sdk/cli/.github/actions/setup@main
+
+    - name: Build Mod
+      run: |
+        cmake -B build -A win32
+        cmake --build build --config ${{ matrix.config }}
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: speedrun-mod
+        path: build/*.geode
